@@ -34,17 +34,17 @@ var vivaldiTooltipObserver = new MutationObserver(
                             }
                         });
                         console.log('>>>' + tab_id);
-                        var url = document.getElementById(tab_id).src.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').split('.');
-                        // google.com
+                        var url = document.getElementById(tab_id).src.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase().split('.');
+                        var nbsp = '\xa0';
                         switch(url.length) {
                             case 2:
-                                tooltip_thumbnail.appendChild(formatUrl('', url[0], '.' + url[1]))
+                                tooltip_thumbnail.appendChild(formatUrl(nbsp, url[0], '.' + url[1]))
                                 break;
                             case 3:
                                 tooltip_thumbnail.appendChild(formatUrl(url[0] + '.', url[1], '.' + url[2]))
                                 break;
                             default:
-                                tooltip_thumbnail.appendChild(formatUrl('', url.join('.'), ''));
+                                tooltip_thumbnail.appendChild(formatUrl(nbsp, url.join('.'), nbsp));
                         }
                     }
                 });
@@ -58,15 +58,16 @@ function formatUrl(top, middle, bottom) {
         var overlay = document.createElement('div');
         overlay.classList += cssClass;
         overlay.textContent = text;
-        overlay.style.zIndex = 1000;
         return overlay;
     }
-    var overlayContainer = createOverlay('', 'thumbnail-url-container');
+    var overlayContainer = createOverlay('', 'thumbnail-url-overlay');
+    var alignmentContainer = createOverlay('', 'thumbnail-url-alignment');
     var topOverlay = createOverlay(top, 'top');
-    overlayContainer.appendChild(topOverlay);
+    alignmentContainer.appendChild(topOverlay);
     var middleOverlay = createOverlay(middle, 'middle');
-    overlayContainer.appendChild(middleOverlay);
+    alignmentContainer.appendChild(middleOverlay);
     var bottomOverlay = createOverlay(bottom, 'bottom');
-    overlayContainer.appendChild(bottomOverlay);
+    alignmentContainer.appendChild(bottomOverlay);
+    overlayContainer.appendChild(alignmentContainer);
     return overlayContainer;
 }
