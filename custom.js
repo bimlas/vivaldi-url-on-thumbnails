@@ -34,23 +34,39 @@ var vivaldiTooltipObserver = new MutationObserver(
                             }
                         });
                         console.log('>>>' + tab_id);
-                        var url = document.getElementById(tab_id).src.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '');
-                        var urlOverlay = document.createElement('div');
-                        urlOverlay.textContent = url;
-                        urlOverlay.style.zIndex = 1000;
-                        tooltip_thumbnail.appendChild(urlOverlay);
+                        var url = document.getElementById(tab_id).src.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').split('.');
+                        // google.com
+                        switch(url.length) {
+                            case 2:
+                                tooltip_thumbnail.appendChild(formatUrl('', url[0], '.' + url[1]))
+                                break;
+                            case 3:
+                                tooltip_thumbnail.appendChild(formatUrl(url[0] + '.', url[1], '.' + url[2]))
+                                break;
+                            default:
+                                tooltip_thumbnail.appendChild(formatUrl('', url.join('.'), ''));
+                        }
                     }
-//                    if (node.classList.contains('find-in-page')) {
-//                        node.alertParentNode = getClosestParentByClass(node, 'webpageview');
-//                        observeFindInPageChanged.observe(node, {
-//                            characterData: true,
-//                            attributes: true,
-//                            childList: false,
-//                            subtree: true
-//                        });
-//                    }
                 });
             }
         });
     }
 );
+
+function formatUrl(top, middle, bottom) {
+    function createOverlay(text, cssClass) {
+        var overlay = document.createElement('div');
+        overlay.classList += cssClass;
+        overlay.textContent = text;
+        overlay.style.zIndex = 1000;
+        return overlay;
+    }
+    var overlayContainer = createOverlay('', 'thumbnail-url-container');
+    var topOverlay = createOverlay(top, 'top');
+    overlayContainer.appendChild(topOverlay);
+    var middleOverlay = createOverlay(middle, 'middle');
+    overlayContainer.appendChild(middleOverlay);
+    var bottomOverlay = createOverlay(bottom, 'bottom');
+    overlayContainer.appendChild(bottomOverlay);
+    return overlayContainer;
+}
