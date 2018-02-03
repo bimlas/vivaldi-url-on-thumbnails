@@ -7,6 +7,7 @@ var DEBUG = true;
         setTimeout(observeTooltipChanged, 300);
         return;
     }
+
     vivaldiTooltipObserver.observe(vivaldiTooltip, {
         characterData: false,
         attributes: false,
@@ -22,15 +23,23 @@ var vivaldiTooltipObserver = new MutationObserver(
                 mutation.addedNodes.forEach(function (node) {
                     DEBUG && console.log('vivaldiTooltip mutation: addedNode: ', node, node.classList);
                     if (node.classList.contains('tooltip-item')) {
-                        thumbnail = node.querySelector('.thumbnail-image');
-                        if (thumbnail == null) {
+                        tooltip_thumbnail = node.querySelector('.thumbnail-image');
+                        if (tooltip_thumbnail == null) {
                             return;
                         }
-                        DEBUG && console.log('Thumbnail:', thumbnail);
+                        var tab_id = null;
+                        document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function(thumbnail) {
+                            tab_id = thumbnail.parentElement.id.replace('tab-', '')
+                            console.log('>>>');
+                            if (thumbnail.style.backgroundImage == tooltip_thumbnail.style.backgroundImage) {
+                                return;
+                            }
+                        });
+                        var url = document.getElementById(tab_id).src;
                         var urlOverlay = document.createElement('div');
-                        urlOverlay.textContent = 'URL';
+                        urlOverlay.textContent = url;
                         urlOverlay.style.zIndex = 1000;
-                        thumbnail.appendChild(urlOverlay);
+                        tooltip_thumbnail.appendChild(urlOverlay);
                     }
 //                    if (node.classList.contains('find-in-page')) {
 //                        node.alertParentNode = getClosestParentByClass(node, 'webpageview');
