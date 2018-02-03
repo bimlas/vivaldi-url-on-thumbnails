@@ -28,14 +28,14 @@ var vivaldiTooltipObserver = new MutationObserver(
                             return;
                         }
                         var tab_id = null;
-                        document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function(thumbnail) {
-                            tab_id = thumbnail.parentElement.id.replace('tab-', '')
-                            console.log('>>>');
-                            if (thumbnail.style.backgroundImage == tooltip_thumbnail.style.backgroundImage) {
+                        document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function(tab_thumbnail) {
+                            tab_id = tab_thumbnail.parentElement.id.replace('tab-', '')
+                            if (tab_thumbnail.style.backgroundImage == tooltip_thumbnail.style.backgroundImage) {
                                 return;
                             }
                         });
-                        var url = document.getElementById(tab_id).src;
+                        console.log('>>>' + tab_id);
+                        var url = document.getElementById(tab_id).src.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '');
                         var urlOverlay = document.createElement('div');
                         urlOverlay.textContent = url;
                         urlOverlay.style.zIndex = 1000;
