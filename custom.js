@@ -29,9 +29,8 @@ var vivaldiTooltipObserver = new MutationObserver(
                         }
                         var tab_id = null;
                         document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function(tab_thumbnail) {
-                            tab_id = tab_thumbnail.parentElement.id.replace('tab-', '')
                             if (tab_thumbnail.style.backgroundImage == tooltip_thumbnail.style.backgroundImage) {
-                                return;
+                                tab_id = tab_thumbnail.parentElement.id.replace('tab-', '');
                             }
                         });
                         console.log('>>>' + tab_id);
