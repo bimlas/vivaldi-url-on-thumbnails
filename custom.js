@@ -17,11 +17,12 @@ var DEBUG = true;
 var observer = new MutationObserver(
     function (mutations) {
         mutations.forEach(function (mutation) {
+            DEBUG && console.log('MUTATION', mutation.type);
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                 mutation.addedNodes.forEach(function (node) {
-                    DEBUG && console.log('MUTATION: addedNode: ', node.classList.toString(), node);
-                    if (node.classList.contains('tooltip-item')) {
-                        showUrlOnThumbnail(node);
+                    DEBUG && console.log('ADDED NODE:', node.classList.toString(), node);
+                    if (node.classList.contains('tooltip-item') || node.classList.contains('tooltip')) {
+                        showUrlOnThumbnail(node.querySelector('.thumbnail-image'));
                     }
                 });
             }
@@ -29,8 +30,7 @@ var observer = new MutationObserver(
     }
 );
 
-function showUrlOnThumbnail(node) {
-    target_thumbnail = node.querySelector('.thumbnail-image');
+function showUrlOnThumbnail(target_thumbnail) {
     if (target_thumbnail == null) {
         return;
     }
@@ -40,8 +40,17 @@ function showUrlOnThumbnail(node) {
             tab_id = tab_thumbnail.parentElement.id.replace('tab-', '');
         }
     });
-    console.log('>>>' + tab_id);
-    var url = document.getElementById(tab_id).src.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase().split('.');
+    DEBUG && console.log('TAB ID OF THUMBNAIL:', tab_id);
+
+    var url = document.getElementById(tab_id).src;
+    DEBUG && console.log('URL:', url);
+    // Skip speed dial, settings and other internal pages.
+    if (url.startsWith('chrome')) {
+        return;
+    }
+
+    url = url.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase().split('.')
+
     var nbsp = '\xa0';
     switch(url.length) {
         case 2:
