@@ -1,4 +1,4 @@
-var DEBUG = true;
+var DEBUG = false;
 
 (function observeTopNodeWhenExists() {
     var topNode = document.querySelector('#vivaldi-tooltip');
@@ -34,8 +34,19 @@ function showUrlOnThumbnail(target_thumbnail) {
     if (target_thumbnail == null) {
         return;
     }
+
+    var url = getUrlOfThumbnail(target_thumbnail);
+
+    // Skip speed dial, settings and other internal pages.
+    if (url.startsWith('chrome')) {
+        return;
+    }
+    target_thumbnail.appendChild(createUrlOverlay(url));
+}
+
+function getUrlOfThumbnail(target_thumbnail) {
     var tab_id = null;
-    document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function(tab_thumbnail) {
+    document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function (tab_thumbnail) {
         if (tab_thumbnail.style.backgroundImage == target_thumbnail.style.backgroundImage) {
             tab_id = tab_thumbnail.parentElement.id.replace('tab-', '');
         }
@@ -44,33 +55,24 @@ function showUrlOnThumbnail(target_thumbnail) {
 
     var url = document.getElementById(tab_id).src;
     DEBUG && console.log('URL:', url);
-    // Skip speed dial, settings and other internal pages.
-    if (url.startsWith('chrome')) {
-        return;
-    }
+    return url;
+}
 
-    url = url.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase().split('.')
-
+function createUrlOverlay(url) {
+    var urlPretty = url.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase();
+    var urlParts = urlPretty.split('.');
     var nbsp = '\xa0';
-    switch(url.length) {
+    switch (urlParts.length) {
         case 2:
-            target_thumbnail.appendChild(formatUrl(nbsp, url[0], '.' + url[1]))
-            break;
+            return formatUrl(nbsp, urlParts[0], '.' + urlParts[1]);
         case 3:
-            target_thumbnail.appendChild(formatUrl(url[0] + '.', url[1], '.' + url[2]))
-            break;
+            return formatUrl(urlParts[0] + '.', urlParts[1], '.' + urlParts[2]);
         default:
-            target_thumbnail.appendChild(formatUrl(nbsp, url.join('.'), nbsp));
+            return formatUrl(nbsp, urlParts.join('.'), nbsp);
     }
 }
 
 function formatUrl(top, middle, bottom) {
-    function createOverlay(text, cssClass) {
-        var overlay = document.createElement('div');
-        overlay.classList += cssClass;
-        overlay.textContent = text;
-        return overlay;
-    }
     var overlayContainer = createOverlay('', 'thumbnail-url-overlay');
     var alignmentContainer = createOverlay('', 'thumbnail-url-alignment');
     var topOverlay = createOverlay(top, 'top');
@@ -81,4 +83,11 @@ function formatUrl(top, middle, bottom) {
     alignmentContainer.appendChild(bottomOverlay);
     overlayContainer.appendChild(alignmentContainer);
     return overlayContainer;
+}
+
+function createOverlay(text, cssClass) {
+    var overlay = document.createElement('div');
+    overlay.classList += cssClass;
+    overlay.textContent = text;
+    return overlay;
 }
