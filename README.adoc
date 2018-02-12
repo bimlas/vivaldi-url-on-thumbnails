@@ -1,0 +1,11 @@
+= Show URL on thumbnails
+
+image:https://cdn.pbrd.co/images/H7ghVfp.gif[screencast]
+
+Please
+https://forum.vivaldi.net/topic/24173/show-url-on-the-thumbnails[upvote the
+feature request] if you like it!
+
+== Installation instructions
+
+https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1[Modding Vivaldi]
