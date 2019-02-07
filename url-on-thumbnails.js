@@ -66,15 +66,17 @@ function getUrlOfThumbnail(target_tab_title) {
 
 function createUrlOverlay(url) {
     var urlPretty = url.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase();
-    var urlParts = urlPretty.split('.');
+    var urlParts = urlPretty.split(':')
+    var portNumber = urlParts[1] ? ':' + urlParts[1] : '';
+    var urlParts = urlParts[0].split('.');
     var nbsp = '\xa0';
     switch (urlParts.length) {
         case 2:
-            return formatUrl(nbsp, urlParts[0], '.' + urlParts[1]);
+            return formatUrl(nbsp, urlParts[0], '.' + urlParts[1] + portNumber);
         case 3:
-            return formatUrl(urlParts[0] + '.', urlParts[1], '.' + urlParts[2]);
+            return formatUrl(urlParts[0] + '.', urlParts[1], '.' + urlParts[2] + portNumber);
         default:
-            return formatUrl(nbsp, urlParts.join('.'), nbsp);
+            return formatUrl(nbsp, urlParts.join('.'), nbsp + portNumber);
     }
 }
 
