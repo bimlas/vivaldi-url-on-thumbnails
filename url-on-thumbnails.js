@@ -22,7 +22,7 @@ var observer = new MutationObserver(
                 mutation.addedNodes.forEach(function (node) {
                     DEBUG && console.log('ADDED NODE:', node.classList.toString(), node);
                     if (node.classList.contains('tooltip-item') || node.classList.contains('tooltip')) {
-                        showUrlOnThumbnail(node.querySelector('.thumbnail-image'));
+                        showUrlOnThumbnail(node.querySelector('.thumbnail-text'));
                     }
                 });
             }
@@ -30,25 +30,31 @@ var observer = new MutationObserver(
     }
 );
 
-function showUrlOnThumbnail(target_thumbnail) {
-    if (target_thumbnail == null) {
+function showUrlOnThumbnail(target_tab_title) {
+    if (target_tab_title == null) {
         return;
     }
 
-    var url = getUrlOfThumbnail(target_thumbnail);
+    // Skip if there is no thumbnail (current single tab)
+    if(!target_tab_title.parentElement.parentElement.querySelector('.thumbnail-image')) {
+        return;
+    }
+
+    var url = getUrlOfThumbnail(target_tab_title);
 
     // Skip speed dial, settings and other internal pages.
     if (url.startsWith('chrome')) {
         return;
     }
-    target_thumbnail.appendChild(createUrlOverlay(url));
+
+    target_tab_title.parentElement.parentElement.appendChild(createUrlOverlay(url));
 }
 
-function getUrlOfThumbnail(target_thumbnail) {
+function getUrlOfThumbnail(target_tab_title) {
     var tab_id = null;
-    document.querySelector('#tabs-container').querySelectorAll('.thumbnail-image').forEach(function (tab_thumbnail) {
-        if (tab_thumbnail.style.backgroundImage == target_thumbnail.style.backgroundImage) {
-            tab_id = tab_thumbnail.parentElement.id.replace('tab-', '');
+    document.querySelector('#tabs-container').querySelectorAll('.tab-header .title').forEach(function (tab_title) {
+        if (tab_title.innerText == target_tab_title.innerText) {
+            tab_id = tab_title.parentElement.parentElement.id.replace('tab-', '');
         }
     });
     DEBUG && console.log('TAB ID OF THUMBNAIL:', tab_id);
