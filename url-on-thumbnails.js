@@ -40,55 +40,60 @@ function showUrlOnThumbnail(target_tab_title) {
         return;
     }
 
-    var url = getUrlOfThumbnail(target_tab_title);
+    var data = getUrlOfThumbnail(target_tab_title);
 
     // Skip speed dial, settings and other internal pages.
-    if (url.startsWith('chrome')) {
+    if (data.url.startsWith('chrome')) {
         return;
     }
 
-    target_tab_title.parentElement.parentElement.appendChild(createUrlOverlay(url));
+    target_tab_title.parentElement.parentElement.appendChild(createUrlOverlay(data));
 }
 
 function getUrlOfThumbnail(target_tab_title) {
-    var tab_id = null;
+    var tab_element = null;
     document.querySelector('#tabs-container').querySelectorAll('.tab-header .title').forEach(function (tab_title) {
         if (tab_title.innerText == target_tab_title.innerText) {
-            tab_id = tab_title.parentElement.parentElement.id.replace('tab-', '');
+            tab_element = tab_title.parentElement.parentElement;
         }
     });
+
+    var tab_id = tab_element.id.replace('tab-', '');
     DEBUG && console.log('TAB ID OF THUMBNAIL:', tab_id);
 
-    var url = document.getElementById(tab_id).src;
-    DEBUG && console.log('URL:', url);
-    return url;
+    var data = {
+        'url': document.getElementById(tab_id).src,
+        'favicon': tab_element.querySelector('.favicon'),
+    }
+    DEBUG && console.log('DATA:', data);
+    return data;
 }
 
-function createUrlOverlay(url) {
-    var urlPretty = url.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase();
+function createUrlOverlay(data) {
+    var urlPretty = data.url.replace(/.*:\/\/(www\.)?/, '').replace(/\/.*/, '').toUpperCase();
     var urlParts = urlPretty.split(':')
     var portNumber = urlParts[1] ? ':' + urlParts[1] : '';
     var urlParts = urlParts[0].split('.');
     var nbsp = '\xa0';
     switch (urlParts.length) {
         case 2:
-            return formatUrl(nbsp, urlParts[0], '.' + urlParts[1] + portNumber);
+            return formatContent(data.favicon, nbsp, urlParts[0], '.' + urlParts[1] + portNumber);
         case 3:
-            return formatUrl(urlParts[0] + '.', urlParts[1], '.' + urlParts[2] + portNumber);
+            return formatContent(data.favicon, urlParts[0] + '.', urlParts[1], '.' + urlParts[2] + portNumber);
         default:
-            return formatUrl(nbsp, urlParts.join('.'), nbsp + portNumber);
+            return formatContent(data.favicon, nbsp, urlParts.join('.'), nbsp + portNumber);
     }
 }
 
-function formatUrl(top, middle, bottom) {
+function formatContent(favicon, top, middle, bottom) {
     var overlayContainer = createOverlay('', 'thumbnail-url-overlay');
     var alignmentContainer = createOverlay('', 'thumbnail-url-alignment');
-    var topOverlay = createOverlay(top, 'top');
-    alignmentContainer.appendChild(topOverlay);
-    var middleOverlay = createOverlay(middle, 'middle');
-    alignmentContainer.appendChild(middleOverlay);
-    var bottomOverlay = createOverlay(bottom, 'bottom');
-    alignmentContainer.appendChild(bottomOverlay);
+
+    alignmentContainer.appendChild(createFaviconOverlay(favicon));
+    alignmentContainer.appendChild(createOverlay(top, 'top'));
+    alignmentContainer.appendChild(createOverlay(middle, 'middle'));
+    alignmentContainer.appendChild(createOverlay(bottom, 'bottom'));
+
     overlayContainer.appendChild(alignmentContainer);
     return overlayContainer;
 }
@@ -98,4 +103,14 @@ function createOverlay(text, cssClass) {
     overlay.classList += cssClass;
     overlay.textContent = text;
     return overlay;
+}
+
+function createFaviconOverlay(favicon) {
+    var faviconOverlay = document.createElement('img');
+    if(favicon.srcset) {
+        faviconOverlay.srcset = favicon.srcset;
+    }
+    faviconOverlay.width = 32;
+    faviconOverlay.height = 32;
+    return faviconOverlay;
 }
