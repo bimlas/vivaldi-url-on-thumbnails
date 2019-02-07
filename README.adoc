@@ -1,6 +1,9 @@
 = Show URL on thumbnails
 
-image:https://cdn.pbrd.co/images/H7ghVfp.gif[screencast]
+* https://gitlab.com/bimlas/vivaldi-url-on-thumbnails (official repository)
+* https://github.com/bimlas/vivaldi-url-on-thumbnails (mirror, please give a star if you like it)
+
+image:https://i.imgur.com/G4Da3M7.gif[screencast]
 
 Please
 https://forum.vivaldi.net/topic/24173/show-url-on-the-thumbnails[upvote the
@@ -9,3 +12,7 @@ feature request] if you like it!
 == Installation instructions
 
 https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1[Modding Vivaldi]
+
+== Known problems
+
+* Does not works on tab stacks
