@@ -1,3 +1,5 @@
+*DEPRECATED The preview of the Vivaldi tabs has changed completely*
+
 = Show URL on thumbnails
 
 * https://gitlab.com/bimlas/vivaldi-url-on-thumbnails (official repository)
